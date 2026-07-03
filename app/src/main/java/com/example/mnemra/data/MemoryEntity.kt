@@ -8,6 +8,8 @@ data class MemoryEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val text: String,
+    val title: String,
+    val content: String,
+
     val createdAt: Long = System.currentTimeMillis()
 )

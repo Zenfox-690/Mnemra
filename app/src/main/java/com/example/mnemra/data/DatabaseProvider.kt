@@ -14,7 +14,8 @@ object DatabaseProvider {
                 context.applicationContext,
                 MnemraDatabase::class.java,
                 "mnemra_db"
-            ).allowMainThreadQueries()
+            ).fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
             .build()
             INSTANCE = instance
             instance

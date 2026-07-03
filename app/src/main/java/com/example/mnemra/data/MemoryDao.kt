@@ -12,4 +12,18 @@ interface MemoryDao {
 
     @Query("SELECT * FROM memories ORDER BY createdAt DESC")
     fun getAll(): List<MemoryEntity>
+
+    @androidx.room.Delete
+    fun delete(memory: MemoryEntity)
+
+    @androidx.room.Update
+    fun update(memory: MemoryEntity)
+
+    @Query("""
+    SELECT * FROM memories
+    WHERE title LIKE '%' || :query || '%'
+    OR content LIKE '%' || :query || '%'
+    ORDER BY createdAt DESC
+    """)
+    fun search(query: String): List<MemoryEntity>
 }

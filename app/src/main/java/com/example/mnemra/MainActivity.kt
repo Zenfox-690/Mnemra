@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mnemra.data.DatabaseProvider
+import com.example.mnemra.data.MemoryEntity
 import com.example.mnemra.data.MemoryRepository
 
 class MainActivity : ComponentActivity() {
@@ -21,49 +22,88 @@ class MainActivity : ComponentActivity() {
         val db = DatabaseProvider.getDatabase(this)
         val repo = MemoryRepository(db.memoryDao())
 
-        setContent {
-            MnemraScreen(repo)
-        }
+        setContent { MnemraScreen(repo) }
     }
 }
 
 @Composable
 fun MnemraScreen(repo: MemoryRepository) {
-    var input by remember { mutableStateOf("") }
-    var memories by remember { mutableStateOf(listOf<String>()) }
+    var title by remember { mutableStateOf("") }
+    var content by remember { mutableStateOf("") }
+    var memories by remember { mutableStateOf(listOf<MemoryEntity>()) }
+    var search by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        memories = repo.getAll().map { it.text }
-    }
+    LaunchedEffect(Unit) { memories = repo.getAll() }
 
     Column(modifier = Modifier.padding(16.dp)) {
-
         OutlinedTextField(
-            value = input,
-            onValueChange = { input = it },
-            label = { Text("Enter memory") },
-            modifier = Modifier.fillMaxWidth()
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Title") },
+                modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        OutlinedTextField(
+                value = content,
+                onValueChange = { content = it },
+                label = { Text("Memory") },
+                modifier = Modifier.fillMaxWidth()
+        )
+
         Button(
-            onClick = {
-                if (input.isNotBlank()) {
-                    repo.insert(input)
-                    memories = repo.getAll().map { it.text }
-                    input = ""
+                onClick = {
+                    if (title.isNotBlank() || content.isNotBlank()) {
+                        repo.insert(title, content)
+                        memories = repo.getAll()
+                        title = ""
+                        content = ""
+                    }
                 }
-            }
-        ) {
-            Text("Save")
-        }
+        ) { Text("Save") }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = search,
+            onValueChange = {
+                search = it
+                memories =
+                    if (it.isBlank())
+                        repo.getAll()
+                    else
+                        repo.search(it)
+            },
+            label = { Text("Search") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn {
             items(memories) { memory ->
-                Text(memory)
+                Card(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        onClick = {
+                            repo.update(memory.copy(title = memory.title + " ✓"))
+                            memories = repo.getAll()
+                        }
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        Text(memory.title)
+                        Text(memory.content)
+
+                        Button(
+                            onClick = {
+                                repo.delete(memory)
+                                memories = repo.getAll()
+                            }
+                        ) {
+                            Text("Delete")
+                        }
+                    }
+                }
             }
         }
     }
