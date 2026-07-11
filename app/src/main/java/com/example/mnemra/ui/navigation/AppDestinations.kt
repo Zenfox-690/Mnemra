@@ -25,4 +25,7 @@ sealed class AppDestinations(val route: String) {
         fun createRoute(flashcardId: Long) =
             "flashcard/$flashcardId/review"
     }
+
+    data object ReviewQueue :
+        AppDestinations("review_queue")
 }

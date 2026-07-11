@@ -17,4 +17,7 @@ class FlashcardRepository @Inject constructor(
 
     suspend fun getById(id: Long): Flashcard? =
         dao.getById(id)
+
+    suspend fun getDue(now: Long): List<Flashcard> =
+        dao.getDue(now)
 }

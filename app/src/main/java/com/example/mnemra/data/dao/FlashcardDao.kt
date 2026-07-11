@@ -29,4 +29,21 @@ interface FlashcardDao {
 
     @Query("SELECT * FROM flashcards WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): Flashcard?
+
+    @Query("""
+        SELECT f.*
+        FROM flashcards f
+        LEFT JOIN reviews r
+            ON r.id = (
+                SELECT r2.id
+                FROM reviews r2
+                WHERE r2.flashcardId = f.id
+                ORDER BY r2.reviewedAt DESC
+                LIMIT 1
+            )
+        WHERE r.id IS NULL
+           OR r.nextReviewAt <= :now
+        ORDER BY COALESCE(r.nextReviewAt, 0) ASC
+    """)
+    suspend fun getDue(now: Long): List<Flashcard>
 }

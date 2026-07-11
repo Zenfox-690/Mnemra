@@ -11,6 +11,7 @@ import com.example.mnemra.ui.screen.CreateFlashcardScreen
 import com.example.mnemra.ui.screen.CreateMemoryScreen
 import com.example.mnemra.ui.screen.HomeScreen
 import com.example.mnemra.ui.screen.MemoryDetailScreen
+import com.example.mnemra.ui.screen.ReviewQueueScreen
 import com.example.mnemra.ui.screen.ReviewScreen
 
 @Composable
@@ -25,7 +26,12 @@ fun AppNavigation() {
                     onMemoryClick = { memoryId ->
                         navController.navigate(AppDestinations.MemoryDetail.createRoute(memoryId))
                     },
-                    onArchiveClick = { navController.navigate(AppDestinations.Archive.route) }
+                    onArchiveClick = { navController.navigate(AppDestinations.Archive.route) },
+                    onReviewClick = {
+                        navController.navigate(
+                            AppDestinations.ReviewQueue.route
+                        )
+                    }
             )
         }
 
@@ -75,6 +81,14 @@ fun AppNavigation() {
             val flashcardId = backStackEntry.arguments?.getLong("flashcardId") ?: return@composable
 
             ReviewScreen(flashcardId = flashcardId, onBack = { navController.popBackStack() })
+        }
+
+        composable(AppDestinations.ReviewQueue.route) {
+            ReviewQueueScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
