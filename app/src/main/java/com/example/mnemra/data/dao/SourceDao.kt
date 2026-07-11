@@ -1,20 +1,16 @@
 package com.example.mnemra.data.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 import com.example.mnemra.data.entity.Source
 
 @Dao
 interface SourceDao {
 
     @Insert
-    fun insert(source: Source): Long
+    suspend fun insert(source: Source): Long
 
-    @Update
-    fun update(source: Source)
-
-    @Delete
-    fun delete(source: Source)
-
-    @Query("SELECT * FROM sources ORDER BY name")
-    fun getAll(): List<Source>
+    @Query("SELECT * FROM sources WHERE url = :url LIMIT 1")
+    suspend fun getByUrl(url: String): Source?
 }
