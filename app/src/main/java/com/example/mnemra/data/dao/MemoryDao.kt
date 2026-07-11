@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
 interface MemoryDao {
 
     @Insert
-    fun insert(memory: Memory): Long
+    suspend fun insert(memory: Memory): Long
 
     @Update
-    fun update(memory: Memory)
+    suspend fun update(memory: Memory)
 
     @Delete
-    fun delete(memory: Memory)
+    suspend fun delete(memory: Memory)
 
     @Query("SELECT * FROM memories ORDER BY createdAt DESC")
     fun getAll(): Flow<List<Memory>>

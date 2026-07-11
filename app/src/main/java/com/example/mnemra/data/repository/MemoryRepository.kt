@@ -8,13 +8,13 @@ class MemoryRepository @javax.inject.Inject constructor(
     private val dao: MemoryDao
 ) {
 
-    fun insert(memory: Memory): Long =
+    suspend fun insert(memory: Memory): Long =
         dao.insert(memory)
 
-    fun update(memory: Memory) =
+    suspend fun update(memory: Memory) =
         dao.update(memory)
 
-    fun delete(memory: Memory) =
+    suspend fun delete(memory: Memory) =
         dao.delete(memory)
 
     fun getAll(): Flow<List<Memory>> =
