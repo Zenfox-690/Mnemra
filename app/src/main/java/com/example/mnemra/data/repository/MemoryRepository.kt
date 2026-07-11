@@ -25,4 +25,7 @@ class MemoryRepository @javax.inject.Inject constructor(
 
     fun search(query: String): Flow<List<Memory>> =
         dao.search(query)
+
+    fun getArchived(): Flow<List<Memory>> =
+        dao.getArchived()
 }

@@ -6,6 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.mnemra.ui.screen.ArchiveScreen
+import com.example.mnemra.ui.screen.CreateFlashcardScreen
 import com.example.mnemra.ui.screen.CreateMemoryScreen
 import com.example.mnemra.ui.screen.HomeScreen
 import com.example.mnemra.ui.screen.MemoryDetailScreen
@@ -30,6 +32,9 @@ fun AppNavigation() {
                     navController.navigate(
                         AppDestinations.MemoryDetail.createRoute(memoryId)
                     )
+                },
+                onArchiveClick = {
+                    navController.navigate(AppDestinations.Archive.route)
                 }
             )
         }
@@ -57,6 +62,40 @@ fun AppNavigation() {
                     ?: return@composable
 
             MemoryDetailScreen(
+                memoryId = memoryId,
+                onBack = {
+                    navController.popBackStack()
+                },
+                onAddFlashcard = {
+                    navController.navigate(
+                        AppDestinations.CreateFlashcard.createRoute(memoryId)
+                    )
+                }
+            )
+        }
+
+        composable(AppDestinations.Archive.route) {
+            ArchiveScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            route = AppDestinations.CreateFlashcard.route,
+            arguments = listOf(
+                navArgument("memoryId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+
+            val memoryId =
+                backStackEntry.arguments?.getLong("memoryId")
+                    ?: return@composable
+
+            CreateFlashcardScreen(
                 memoryId = memoryId,
                 onBack = {
                     navController.popBackStack()

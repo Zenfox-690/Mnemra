@@ -17,7 +17,7 @@ object DatabaseProvider {
                 MnemraDatabase::class.java,
                 "mnemra.db"
             )
-                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration(true)
                 .build()
                 .also {
                     INSTANCE = it

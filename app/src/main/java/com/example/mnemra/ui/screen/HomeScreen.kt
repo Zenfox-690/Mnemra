@@ -15,10 +15,13 @@ import com.example.mnemra.viewmodel.MemoryViewModel
 fun HomeScreen(
     onAddMemory: () -> Unit,
     onMemoryClick: (Long) -> Unit,
+    onArchiveClick: () -> Unit,
     viewModel: MemoryViewModel = hiltViewModel()
 ) {
 
     val memories by viewModel.memories.collectAsState()
+    
+    var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
 
@@ -43,6 +46,25 @@ fun HomeScreen(
             Text(
                 "Mnemra",
                 style = MaterialTheme.typography.headlineMedium
+            )
+
+            TextButton(
+                onClick = onArchiveClick
+            ) {
+                Text("Archive")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = {
+                    searchQuery = it
+                    viewModel.search(it)
+                },
+                label = { Text("Search memories") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))

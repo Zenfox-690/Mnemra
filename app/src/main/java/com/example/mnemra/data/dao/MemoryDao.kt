@@ -15,7 +15,11 @@ interface MemoryDao {
     @Delete
     suspend fun delete(memory: Memory)
 
-    @Query("SELECT * FROM memories ORDER BY createdAt DESC")
+    @Query("""
+        SELECT * FROM memories
+        WHERE archived = 0
+        ORDER BY favorite DESC, createdAt DESC
+    """)
     fun getAll(): Flow<List<Memory>>
 
     @Query("SELECT * FROM memories WHERE id = :id")
@@ -23,9 +27,19 @@ interface MemoryDao {
 
     @Query("""
         SELECT * FROM memories
-        WHERE title LIKE '%' || :query || '%'
-           OR content LIKE '%' || :query || '%'
-        ORDER BY createdAt DESC
+        WHERE archived = 0
+        AND (
+            title LIKE '%' || :query || '%'
+            OR content LIKE '%' || :query || '%'
+        )
+        ORDER BY favorite DESC, createdAt DESC
     """)
     fun search(query: String): Flow<List<Memory>>
+
+    @Query("""
+        SELECT * FROM memories
+        WHERE archived = 1
+        ORDER BY updatedAt DESC
+    """)
+    fun getArchived(): Flow<List<Memory>>
 }

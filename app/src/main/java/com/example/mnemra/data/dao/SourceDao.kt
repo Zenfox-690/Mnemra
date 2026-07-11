@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.mnemra.data.entity.Source
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SourceDao {
@@ -13,4 +14,7 @@ interface SourceDao {
 
     @Query("SELECT * FROM sources WHERE url = :url LIMIT 1")
     suspend fun getByUrl(url: String): Source?
+
+    @Query("SELECT * FROM sources WHERE id = :id")
+        fun getById(id: Long): Flow<Source?>
 }

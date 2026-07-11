@@ -1,23 +1,29 @@
 package com.example.mnemra.data.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import com.example.mnemra.data.entity.Flashcard
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FlashcardDao {
 
     @Insert
-    fun insert(card: Flashcard): Long
+    suspend fun insert(card: Flashcard): Long
 
     @Update
-    fun update(card: Flashcard)
+    suspend fun update(card: Flashcard)
 
     @Delete
-    fun delete(card: Flashcard)
+    suspend fun delete(card: Flashcard)
 
     @Query("""
         SELECT * FROM flashcards
         WHERE memoryId = :memoryId
+        ORDER BY createdAt DESC
     """)
-    fun getForMemory(memoryId: Long): List<Flashcard>
+    fun getForMemory(memoryId: Long): Flow<List<Flashcard>>
 }

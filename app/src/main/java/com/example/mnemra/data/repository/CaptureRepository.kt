@@ -33,7 +33,7 @@ class CaptureRepository @Inject constructor(
             memoryDao.insert(
                 Memory(
                     title = title.orEmpty(),
-                    content = url,
+                    content = "",
                     sourceId = sourceId
                 )
             )

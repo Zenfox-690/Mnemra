@@ -2,6 +2,7 @@ package com.example.mnemra.di
 
 import android.content.Context
 import com.example.mnemra.data.database.DatabaseProvider
+import com.example.mnemra.data.repository.FlashcardRepository
 import com.example.mnemra.data.database.MnemraDatabase
 import com.example.mnemra.data.repository.MemoryRepository
 import dagger.Module
@@ -28,4 +29,11 @@ object AppModule {
         database: MnemraDatabase
     ): MemoryRepository =
         MemoryRepository(database.memoryDao())
+
+    @Provides
+    @Singleton
+    fun provideFlashcardRepository(
+        database: MnemraDatabase
+    ): FlashcardRepository =
+        FlashcardRepository(database.flashcardDao())
 }
