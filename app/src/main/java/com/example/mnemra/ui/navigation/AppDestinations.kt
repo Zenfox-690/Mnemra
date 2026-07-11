@@ -18,4 +18,11 @@ sealed class AppDestinations(val route: String) {
         fun createRoute(memoryId: Long) =
             "memory/$memoryId/flashcard/create"
     }
+
+    data object ReviewFlashcard :
+        AppDestinations("flashcard/{flashcardId}/review") {
+
+        fun createRoute(flashcardId: Long) =
+            "flashcard/$flashcardId/review"
+    }
 }

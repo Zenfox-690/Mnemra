@@ -14,4 +14,7 @@ class FlashcardRepository @Inject constructor(
 
     suspend fun insert(card: Flashcard): Long =
         dao.insert(card)
+
+    suspend fun getById(id: Long): Flashcard? =
+        dao.getById(id)
 }

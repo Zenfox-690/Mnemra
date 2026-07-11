@@ -26,4 +26,7 @@ interface FlashcardDao {
         ORDER BY createdAt DESC
     """)
     fun getForMemory(memoryId: Long): Flow<List<Flashcard>>
+
+    @Query("SELECT * FROM flashcards WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): Flashcard?
 }

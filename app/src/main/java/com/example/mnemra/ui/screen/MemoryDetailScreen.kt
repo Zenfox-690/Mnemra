@@ -3,34 +3,34 @@ package com.example.mnemra.ui.screen
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.mnemra.viewmodel.MemoryViewModel
 import com.example.mnemra.viewmodel.FlashcardViewModel
+import com.example.mnemra.viewmodel.MemoryViewModel
 
 @Composable
 fun MemoryDetailScreen(
-    memoryId: Long,
-    onBack: () -> Unit,
-    onAddFlashcard: () -> Unit,
-    viewModel: MemoryViewModel = hiltViewModel(),
-    flashcardViewModel: FlashcardViewModel = hiltViewModel()
+        memoryId: Long,
+        onBack: () -> Unit,
+        onAddFlashcard: () -> Unit,
+        onReviewFlashcard: (Long) -> Unit,
+        viewModel: MemoryViewModel = hiltViewModel(),
+        flashcardViewModel: FlashcardViewModel = hiltViewModel()
 ) {
     val memory by viewModel.getMemory(memoryId).collectAsState(initial = null)
 
-    val source by memory
-        ?.sourceId
-        ?.let { viewModel.getSource(it) }
-        ?.collectAsState(initial = null)
-        ?: remember { mutableStateOf(null) }
+    val source by
+            memory?.sourceId?.let { viewModel.getSource(it) }?.collectAsState(initial = null)
+                    ?: remember { mutableStateOf(null) }
 
-    val flashcards by flashcardViewModel
-        .getForMemory(memoryId)
-        .collectAsState(initial = emptyList())
+    val flashcards by
+            flashcardViewModel.getForMemory(memoryId).collectAsState(initial = emptyList())
 
     val context = LocalContext.current
 
@@ -39,7 +39,10 @@ fun MemoryDetailScreen(
 
         var content by remember(item.id) { mutableStateOf(item.content) }
 
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Column(
+                modifier =
+                        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)
+        ) {
             OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
@@ -57,26 +60,15 @@ fun MemoryDetailScreen(
             )
 
             source?.url?.let { url ->
-
                 Spacer(Modifier.height(12.dp))
 
-                Text(
-                    text = source!!.name,
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Text(text = source!!.name, style = MaterialTheme.typography.titleSmall)
 
                 OutlinedButton(
-                    onClick = {
-                        context.startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse(url)
-                            )
-                        )
-                    }
-                ) {
-                    Text("Open Source")
-                }
+                        onClick = {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }
+                ) { Text("Open Source") }
             }
 
             Spacer(Modifier.height(20.dp))
@@ -107,43 +99,27 @@ fun MemoryDetailScreen(
 
                 Spacer(Modifier.width(12.dp))
 
-                OutlinedButton(
-                    onClick = {
-                        viewModel.toggleFavorite(item)
-                    }
-                ) {
-                    Text(
-                        if (item.favorite) "Unfavorite"
-                        else "Favorite"
-                    )
+                OutlinedButton(onClick = { viewModel.toggleFavorite(item) }) {
+                    Text(if (item.favorite) "Unfavorite" else "Favorite")
                 }
             }
 
             Spacer(Modifier.height(12.dp))
 
             OutlinedButton(
-                onClick = {
-                    viewModel.archiveMemory(item)
-                    onBack()
-                }
-            ) {
-                Text("Archive")
-            }
+                    onClick = {
+                        viewModel.archiveMemory(item)
+                        onBack()
+                    }
+            ) { Text("Archive") }
 
             Spacer(Modifier.height(24.dp))
 
-            Button(
-                onClick = onAddFlashcard
-            ) {
-                Text("Add Flashcard")
-            }
+            Button(onClick = onAddFlashcard) { Text("Add Flashcard") }
 
             Spacer(Modifier.height(16.dp))
 
-            Text(
-                text = "Flashcards",
-                style = MaterialTheme.typography.titleLarge
-            )
+            Text(text = "Flashcards", style = MaterialTheme.typography.titleLarge)
 
             Spacer(Modifier.height(8.dp))
 
@@ -152,23 +128,17 @@ fun MemoryDetailScreen(
             }
 
             flashcards.forEach { card ->
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp)
-                    ) {
-                        Text(
-                            text = card.question,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(text = card.question, style = MaterialTheme.typography.titleMedium)
 
                         Spacer(Modifier.height(4.dp))
 
                         Text(card.answer)
+
+                        Spacer(Modifier.height(8.dp))
+
+                        OutlinedButton(onClick = { onReviewFlashcard(card.id) }) { Text("Review") }
                     }
                 }
             }

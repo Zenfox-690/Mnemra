@@ -5,6 +5,7 @@ import com.example.mnemra.data.database.DatabaseProvider
 import com.example.mnemra.data.repository.FlashcardRepository
 import com.example.mnemra.data.database.MnemraDatabase
 import com.example.mnemra.data.repository.MemoryRepository
+import com.example.mnemra.data.repository.ReviewRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,4 +37,11 @@ object AppModule {
         database: MnemraDatabase
     ): FlashcardRepository =
         FlashcardRepository(database.flashcardDao())
+
+    @Provides
+    @Singleton
+    fun provideReviewRepository(
+        database: MnemraDatabase
+    ): ReviewRepository =
+        ReviewRepository(database.reviewDao())
 }
