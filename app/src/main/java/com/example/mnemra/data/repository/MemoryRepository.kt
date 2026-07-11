@@ -20,7 +20,7 @@ class MemoryRepository @javax.inject.Inject constructor(
     fun getAll(): Flow<List<Memory>> =
         dao.getAll()
 
-    fun getById(id: Long): Memory? =
+    fun getById(id: Long) =
         dao.getById(id)
 
     fun search(query: String): Flow<List<Memory>> =

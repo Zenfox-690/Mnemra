@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mnemra.data.entity.Memory
 import com.example.mnemra.data.repository.MemoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -31,6 +32,21 @@ class MemoryViewModel @Inject constructor(
                     content = content
                 )
             )
+        }
+    }
+
+    fun getMemory(id: Long): Flow<Memory?> =
+        repository.getById(id)
+
+    fun updateMemory(memory: Memory) {
+        viewModelScope.launch {
+            repository.update(memory)
+        }
+    }
+
+    fun deleteMemory(memory: Memory) {
+        viewModelScope.launch {
+            repository.delete(memory)
         }
     }
 }

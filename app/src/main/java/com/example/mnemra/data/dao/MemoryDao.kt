@@ -19,7 +19,7 @@ interface MemoryDao {
     fun getAll(): Flow<List<Memory>>
 
     @Query("SELECT * FROM memories WHERE id = :id")
-    fun getById(id: Long): Memory?
+    fun getById(id: Long): Flow<Memory?>
 
     @Query("""
         SELECT * FROM memories

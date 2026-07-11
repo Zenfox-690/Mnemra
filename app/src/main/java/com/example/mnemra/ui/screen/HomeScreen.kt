@@ -1,5 +1,6 @@
 package com.example.mnemra.ui.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -13,6 +14,7 @@ import com.example.mnemra.viewmodel.MemoryViewModel
 @Composable
 fun HomeScreen(
     onAddMemory: () -> Unit,
+    onMemoryClick: (Long) -> Unit,
     viewModel: MemoryViewModel = hiltViewModel()
 ) {
 
@@ -51,6 +53,9 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
+                        .clickable {
+                            onMemoryClick(it.id)
+                        }
                 ) {
 
                     Column(
