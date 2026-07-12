@@ -16,6 +16,8 @@ fun CreateMemoryScreen(onBack: () -> Unit, viewModel: MemoryViewModel = hiltView
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
 
+    val saving by viewModel.saving.collectAsState()
+
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
         OutlinedTextField(
                 value = title,
@@ -37,13 +39,9 @@ fun CreateMemoryScreen(onBack: () -> Unit, viewModel: MemoryViewModel = hiltView
 
         Button(
                 onClick = {
-                    if (content.isNotBlank()) {
-
-                        viewModel.addMemory(title = title, content = content)
-
-                        onBack()
-                    }
-                }
+                    viewModel.addMemory(title = title, content = content, onComplete = onBack)
+                },
+                enabled = content.isNotBlank() && !saving
         ) { Text("Save") }
     }
 }

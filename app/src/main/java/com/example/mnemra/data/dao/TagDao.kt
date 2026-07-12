@@ -2,19 +2,16 @@ package com.example.mnemra.data.dao
 
 import androidx.room.*
 import com.example.mnemra.data.entity.Tag
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TagDao {
 
-    @Insert
-    fun insert(tag: Tag): Long
+    @Insert suspend fun insert(tag: Tag): Long
 
-    @Update
-    fun update(tag: Tag)
+    @Update suspend fun update(tag: Tag)
 
-    @Delete
-    fun delete(tag: Tag)
+    @Delete suspend fun delete(tag: Tag)
 
-    @Query("SELECT * FROM tags ORDER BY name")
-    fun getAll(): List<Tag>
+    @Query("SELECT * FROM tags ORDER BY name") fun getAll(): Flow<List<Tag>>
 }

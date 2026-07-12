@@ -27,16 +27,20 @@ fun AppNavigation() {
                         navController.navigate(AppDestinations.MemoryDetail.createRoute(memoryId))
                     },
                     onArchiveClick = { navController.navigate(AppDestinations.Archive.route) },
-                    onReviewClick = {
-                        navController.navigate(
-                            AppDestinations.ReviewQueue.route
-                        )
-                    }
+                    onReviewClick = { navController.navigate(AppDestinations.ReviewQueue.route) }
             )
         }
 
         composable(AppDestinations.CreateMemory.route) {
-            CreateMemoryScreen(onBack = { navController.popBackStack() })
+            CreateMemoryScreen(
+                    onBack = {
+                        if (navController.currentBackStackEntry?.destination?.route ==
+                                        AppDestinations.CreateMemory.route
+                        ) {
+                            navController.popBackStack()
+                        }
+                    }
+            )
         }
 
         composable(
@@ -47,7 +51,13 @@ fun AppNavigation() {
 
             MemoryDetailScreen(
                     memoryId = memoryId,
-                    onBack = { navController.popBackStack() },
+                    onBack = {
+                        if (navController.currentBackStackEntry?.destination?.route ==
+                                        AppDestinations.MemoryDetail.route
+                        ) {
+                            navController.popBackStack()
+                        }
+                    },
                     onAddFlashcard = {
                         navController.navigate(
                                 AppDestinations.CreateFlashcard.createRoute(memoryId)
@@ -71,7 +81,16 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val memoryId = backStackEntry.arguments?.getLong("memoryId") ?: return@composable
 
-            CreateFlashcardScreen(memoryId = memoryId, onBack = { navController.popBackStack() })
+            CreateFlashcardScreen(
+                    memoryId = memoryId,
+                    onBack = {
+                        if (navController.currentBackStackEntry?.destination?.route ==
+                                        AppDestinations.CreateFlashcard.route
+                        ) {
+                            navController.popBackStack()
+                        }
+                    }
+            )
         }
 
         composable(
@@ -84,11 +103,7 @@ fun AppNavigation() {
         }
 
         composable(AppDestinations.ReviewQueue.route) {
-            ReviewQueueScreen(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
+            ReviewQueueScreen(onBack = { navController.popBackStack() })
         }
     }
 }

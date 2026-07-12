@@ -2,10 +2,11 @@ package com.example.mnemra.di
 
 import android.content.Context
 import com.example.mnemra.data.database.DatabaseProvider
-import com.example.mnemra.data.repository.FlashcardRepository
 import com.example.mnemra.data.database.MnemraDatabase
+import com.example.mnemra.data.repository.FlashcardRepository
 import com.example.mnemra.data.repository.MemoryRepository
 import com.example.mnemra.data.repository.ReviewRepository
+import com.example.mnemra.data.repository.SourceRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,29 +20,26 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(
-        @ApplicationContext context: Context
-    ): MnemraDatabase =
-        DatabaseProvider.getDatabase(context)
+    fun provideDatabase(@ApplicationContext context: Context): MnemraDatabase =
+            DatabaseProvider.getDatabase(context)
 
     @Provides
     @Singleton
-    fun provideMemoryRepository(
-        database: MnemraDatabase
-    ): MemoryRepository =
-        MemoryRepository(database.memoryDao())
+    fun provideMemoryRepository(database: MnemraDatabase): MemoryRepository =
+            MemoryRepository(database.memoryDao())
 
     @Provides
     @Singleton
-    fun provideFlashcardRepository(
-        database: MnemraDatabase
-    ): FlashcardRepository =
-        FlashcardRepository(database.flashcardDao())
+    fun provideFlashcardRepository(database: MnemraDatabase): FlashcardRepository =
+            FlashcardRepository(database.flashcardDao())
 
     @Provides
     @Singleton
-    fun provideReviewRepository(
-        database: MnemraDatabase
-    ): ReviewRepository =
-        ReviewRepository(database.reviewDao())
+    fun provideReviewRepository(database: MnemraDatabase): ReviewRepository =
+            ReviewRepository(database.reviewDao())
+
+    @Provides
+    @Singleton
+    fun provideSourceRepository(database: MnemraDatabase): SourceRepository =
+            SourceRepository(database.sourceDao())
 }

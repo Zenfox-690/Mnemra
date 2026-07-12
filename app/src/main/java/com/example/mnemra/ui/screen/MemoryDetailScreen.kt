@@ -32,6 +32,8 @@ fun MemoryDetailScreen(
     val flashcards by
             flashcardViewModel.getForMemory(memoryId).collectAsState(initial = emptyList())
 
+    val savingDetail by viewModel.savingDetail.collectAsState()
+
     val context = LocalContext.current
 
     memory?.let { item ->
@@ -76,26 +78,22 @@ fun MemoryDetailScreen(
             Row {
                 Button(
                         onClick = {
-                            viewModel.updateMemory(
+                            viewModel.saveMemoryContent(
                                     item.copy(
                                             title = title,
                                             content = content,
                                             updatedAt = System.currentTimeMillis()
                                     )
                             )
-                            onBack()
                         },
-                        enabled = content.isNotBlank()
+                        enabled = content.isNotBlank() && !savingDetail
                 ) { Text("Save") }
 
                 Spacer(Modifier.width(12.dp))
 
-                Button(
-                        onClick = {
-                            viewModel.deleteMemory(item)
-                            onBack()
-                        }
-                ) { Text("Delete") }
+                Button(onClick = { viewModel.deleteMemory(memory = item, onComplete = onBack) }) {
+                    Text("Delete")
+                }
 
                 Spacer(Modifier.width(12.dp))
 
@@ -107,10 +105,7 @@ fun MemoryDetailScreen(
             Spacer(Modifier.height(12.dp))
 
             OutlinedButton(
-                    onClick = {
-                        viewModel.archiveMemory(item)
-                        onBack()
-                    }
+                    onClick = { viewModel.archiveMemory(memory = item, onComplete = onBack) }
             ) { Text("Archive") }
 
             Spacer(Modifier.height(24.dp))

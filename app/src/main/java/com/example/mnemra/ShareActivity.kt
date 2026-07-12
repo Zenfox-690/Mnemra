@@ -6,30 +6,25 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.mnemra.data.repository.CaptureRepository
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ShareActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var captureRepository: CaptureRepository
+    @Inject lateinit var captureRepository: CaptureRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val sharedText =
-            intent.getStringExtra(Intent.EXTRA_TEXT)
+        val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
 
-        val title =
-            intent.getStringExtra(Intent.EXTRA_SUBJECT)
+        val title = intent.getStringExtra(Intent.EXTRA_SUBJECT)
 
-        val url = sharedText
-            ?.split(Regex("\\s+"))
-            ?.firstOrNull {
-                it.startsWith("http://") ||
-                it.startsWith("https://")
-            }
+        val url =
+                sharedText?.split(Regex("\\s+"))?.firstOrNull {
+                    it.startsWith("http://") || it.startsWith("https://")
+                }
 
         if (url == null) {
             finish()
@@ -37,11 +32,7 @@ class ShareActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch {
-            captureRepository.capture(
-                url = url,
-                title = title
-            )
-
+            captureRepository.capture(url = url, title = title)
             finish()
         }
     }

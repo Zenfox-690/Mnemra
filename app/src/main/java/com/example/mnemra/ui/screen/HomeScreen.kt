@@ -59,19 +59,37 @@ fun HomeScreen(
             }
 
             items(items = memories, key = { it.id }) { memory ->
+                var expanded by remember(memory.id) { mutableStateOf(false) }
+
                 Card(
-                        modifier =
-                                Modifier.fillMaxWidth().padding(vertical = 4.dp).clickable {
-                                    onMemoryClick(memory.id)
-                                }
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable { onMemoryClick(memory.id) }
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         if (memory.title.isNotBlank()) {
-                            Text(memory.title, style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                text = memory.title,
+                                style = MaterialTheme.typography.titleMedium
+                            )
                         }
 
                         if (memory.content.isNotBlank()) {
-                            Text(memory.content)
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
+                                text = memory.content,
+                                maxLines = if (expanded) Int.MAX_VALUE else 3
+                            )
+
+                            if (memory.content.length > 150) {
+                                TextButton(
+                                    onClick = { expanded = !expanded }
+                                ) {
+                                    Text(if (expanded) "Show less" else "Show more")
+                                }
+                            }
                         }
                     }
                 }

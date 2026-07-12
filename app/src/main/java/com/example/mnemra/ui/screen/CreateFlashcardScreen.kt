@@ -12,65 +12,50 @@ import com.example.mnemra.viewmodel.FlashcardViewModel
 
 @Composable
 fun CreateFlashcardScreen(
-    memoryId: Long,
-    onBack: () -> Unit,
-    viewModel: FlashcardViewModel = hiltViewModel()
+        memoryId: Long,
+        onBack: () -> Unit,
+        viewModel: FlashcardViewModel = hiltViewModel()
 ) {
     var question by remember { mutableStateOf("") }
     var answer by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-
-        Text(
-            text = "Create Flashcard",
-            style = MaterialTheme.typography.headlineMedium
-        )
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
+        Text(text = "Create Flashcard", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = question,
-            onValueChange = { question = it },
-            label = { Text("Question") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 120.dp),
-            minLines = 3
+                value = question,
+                onValueChange = { question = it },
+                label = { Text("Question") },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
+                minLines = 3
         )
 
         Spacer(Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = answer,
-            onValueChange = { answer = it },
-            label = { Text("Answer") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 160.dp),
-            minLines = 5
+                value = answer,
+                onValueChange = { answer = it },
+                label = { Text("Answer") },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 160.dp),
+                minLines = 5
         )
 
         Spacer(Modifier.height(20.dp))
 
-        Button(
-            onClick = {
-                viewModel.addFlashcard(
-                    memoryId = memoryId,
-                    question = question,
-                    answer = answer
-                )
+        val saving by viewModel.saving.collectAsState()
 
-                onBack()
-            },
-            enabled = question.isNotBlank() &&
-                    answer.isNotBlank()
-        ) {
-            Text("Save Flashcard")
-        }
+        Button(
+                onClick = {
+                    viewModel.addFlashcard(
+                            memoryId = memoryId,
+                            question = question,
+                            answer = answer,
+                            onComplete = onBack
+                    )
+                },
+                enabled = question.isNotBlank() && answer.isNotBlank() && !saving
+        ) { Text("Save Flashcard") }
     }
 }
