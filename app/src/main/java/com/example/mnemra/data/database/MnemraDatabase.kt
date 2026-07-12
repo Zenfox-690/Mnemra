@@ -17,7 +17,7 @@ import com.example.mnemra.data.entity.*
                         Flashcard::class,
                         Review::class],
         version = 1,
-        exportSchema = false
+        exportSchema = true
 )
 abstract class MnemraDatabase : RoomDatabase() {
 

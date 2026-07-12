@@ -5,31 +5,23 @@ import androidx.lifecycle.viewModelScope
 import com.example.mnemra.data.entity.Flashcard
 import com.example.mnemra.data.repository.FlashcardRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
-class FlashcardViewModel @Inject constructor(
-    private val repository: FlashcardRepository
-) : ViewModel() {
+class FlashcardViewModel @Inject constructor(private val repository: FlashcardRepository) :
+        ViewModel() {
 
-    fun getForMemory(memoryId: Long): Flow<List<Flashcard>> =
-        repository.getForMemory(memoryId)
+    fun getForMemory(memoryId: Long): Flow<List<Flashcard>> = repository.getForMemory(memoryId)
 
-    fun addFlashcard(
-        memoryId: Long,
-        question: String,
-        answer: String
-    ) {
+    fun addFlashcard(memoryId: Long, question: String, answer: String) {
         viewModelScope.launch {
-            repository.insert(
-                Flashcard(
-                    memoryId = memoryId,
-                    question = question,
-                    answer = answer
-                )
-            )
+            repository.insert(Flashcard(memoryId = memoryId, question = question, answer = answer))
         }
+    }
+
+    fun deleteFlashcard(card: Flashcard) {
+        viewModelScope.launch { repository.delete(card) }
     }
 }

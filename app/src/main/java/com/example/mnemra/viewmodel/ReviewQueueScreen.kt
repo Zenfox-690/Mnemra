@@ -1,6 +1,8 @@
 package com.example.mnemra.ui.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,6 +18,7 @@ fun ReviewQueueScreen(
     val cards by viewModel.cards.collectAsState()
     val currentIndex by viewModel.currentIndex.collectAsState()
     val loaded by viewModel.loaded.collectAsState()
+    val submitting by viewModel.submitting.collectAsState()
 
     var answerVisible by remember(currentIndex) {
         mutableStateOf(false)
@@ -35,6 +38,7 @@ fun ReviewQueueScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
             Text(
@@ -61,6 +65,7 @@ fun ReviewQueueScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
 
@@ -97,6 +102,7 @@ fun ReviewQueueScreen(
             Row {
 
                 OutlinedButton(
+                    enabled = !submitting,
                     onClick = {
                         viewModel.submitReview(
                             flashcard = card,
@@ -110,6 +116,7 @@ fun ReviewQueueScreen(
                 Spacer(Modifier.width(12.dp))
 
                 Button(
+                    enabled = !submitting,
                     onClick = {
                         viewModel.submitReview(
                             flashcard = card,

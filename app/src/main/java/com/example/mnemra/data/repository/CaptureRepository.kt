@@ -30,13 +30,18 @@ class CaptureRepository @Inject constructor(
                     )
                 )
 
-            memoryDao.insert(
-                Memory(
-                    title = title.orEmpty(),
-                    content = "",
-                    sourceId = sourceId
+            val existingCapture =
+                memoryDao.getEmptyCaptureForSource(sourceId)
+
+            if (existingCapture == null) {
+                memoryDao.insert(
+                    Memory(
+                        title = title.orEmpty(),
+                        content = "",
+                        sourceId = sourceId
+                    )
                 )
-            )
+            }
         }
     }
 

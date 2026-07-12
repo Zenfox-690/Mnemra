@@ -33,6 +33,9 @@ class ReviewQueueViewModel @Inject constructor(
 
     val loaded: StateFlow<Boolean> = _loaded
 
+    private val _submitting = MutableStateFlow(false)
+    val submitting: StateFlow<Boolean> = _submitting
+
     fun loadQueue() {
         if (_loaded.value) return
 
@@ -50,27 +53,34 @@ class ReviewQueueViewModel @Inject constructor(
         flashcard: Flashcard,
         remembered: Boolean
     ) {
+        if (_submitting.value) return
+
+        _submitting.value = true
+
         viewModelScope.launch {
+            try {
+                val now = System.currentTimeMillis()
 
-            val now = System.currentTimeMillis()
-
-            reviewRepository.insert(
-                Review(
-                    flashcardId = flashcard.id,
-                    rating = if (remembered) 1 else 0,
-                    intervalDays = if (remembered) 1 else 0,
-                    easeFactor = 2.5,
-                    reviewedAt = now,
-                    nextReviewAt =
-                        if (remembered) {
-                            now + 86_400_000L
-                        } else {
-                            now
-                        }
+                reviewRepository.insert(
+                    Review(
+                        flashcardId = flashcard.id,
+                        rating = if (remembered) 1 else 0,
+                        intervalDays = if (remembered) 1 else 0,
+                        easeFactor = 2.5,
+                        reviewedAt = now,
+                        nextReviewAt =
+                            if (remembered) {
+                                now + 86_400_000L
+                            } else {
+                                now
+                            }
+                    )
                 )
-            )
 
-            _currentIndex.value++
+                _currentIndex.value++
+            } finally {
+                _submitting.value = false
+            }
         }
     }
 }

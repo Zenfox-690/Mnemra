@@ -20,6 +20,9 @@ class ReviewViewModel @Inject constructor(
 
     private val _flashcard = MutableStateFlow<Flashcard?>(null)
     val flashcard: StateFlow<Flashcard?> = _flashcard
+    
+    private val _submitting = MutableStateFlow(false)
+    val submitting: StateFlow<Boolean> = _submitting 
 
     fun loadFlashcard(id: Long) {
         viewModelScope.launch {
@@ -30,32 +33,34 @@ class ReviewViewModel @Inject constructor(
 
     fun submitReview(
         flashcardId: Long,
-        remembered: Boolean
+        remembered: Boolean,
+        onComplete: () -> Unit
     ) {
+        if (_submitting.value) return
+
+        _submitting.value = true
+
         viewModelScope.launch {
+            try {
+                val now = System.currentTimeMillis()
 
-            val now = System.currentTimeMillis()
-
-            val intervalDays =
-                if (remembered) 1 else 0
-
-            val nextReviewAt =
-                if (remembered) {
-                    now + 86_400_000L
-                } else {
-                    now
-                }
-
-            reviewRepository.insert(
-                Review(
-                    flashcardId = flashcardId,
-                    rating = if (remembered) 1 else 0,
-                    intervalDays = intervalDays,
-                    easeFactor = 2.5,
-                    reviewedAt = now,
-                    nextReviewAt = nextReviewAt
+                reviewRepository.insert(
+                    Review(
+                        flashcardId = flashcardId,
+                        rating = if (remembered) 1 else 0,
+                        intervalDays = if (remembered) 1 else 0,
+                        easeFactor = 2.5,
+                        reviewedAt = now,
+                        nextReviewAt =
+                            if (remembered) now + 86_400_000L
+                            else now
+                    )
                 )
-            )
+
+                onComplete()
+            } finally {
+                _submitting.value = false
+            }
         }
     }
 }

@@ -42,4 +42,16 @@ interface MemoryDao {
         ORDER BY updatedAt DESC
     """)
     fun getArchived(): Flow<List<Memory>>
+
+    @Query("""
+        SELECT * FROM memories
+        WHERE sourceId = :sourceId
+          AND content = ''
+          AND archived = 0
+        ORDER BY createdAt DESC
+        LIMIT 1
+    """)
+    suspend fun getEmptyCaptureForSource(
+        sourceId: Long
+    ): Memory?
 }

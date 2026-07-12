@@ -128,17 +128,31 @@ fun MemoryDetailScreen(
             }
 
             flashcards.forEach { card ->
+                var expanded by remember(card.id) { mutableStateOf(false) }
+
                 Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        Text(text = card.question, style = MaterialTheme.typography.titleMedium)
+                        Text(
+                                text = card.question,
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = if (expanded) Int.MAX_VALUE else 3
+                        )
 
-                        Spacer(Modifier.height(4.dp))
-
-                        Text(card.answer)
+                        if (card.question.length > 120) {
+                            TextButton(onClick = { expanded = !expanded }) {
+                                Text(if (expanded) "Show less" else "Show more")
+                            }
+                        }
 
                         Spacer(Modifier.height(8.dp))
 
                         OutlinedButton(onClick = { onReviewFlashcard(card.id) }) { Text("Review") }
+
+                        Spacer(Modifier.height(8.dp))
+
+                        TextButton(onClick = { flashcardViewModel.deleteFlashcard(card) }) {
+                            Text("Delete")
+                        }
                     }
                 }
             }

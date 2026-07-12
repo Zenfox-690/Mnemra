@@ -1,6 +1,8 @@
 package com.example.mnemra.ui.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,6 +22,7 @@ fun CreateFlashcardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
 
@@ -34,7 +37,10 @@ fun CreateFlashcardScreen(
             value = question,
             onValueChange = { question = it },
             label = { Text("Question") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 120.dp),
+            minLines = 3
         )
 
         Spacer(Modifier.height(12.dp))
@@ -43,7 +49,10 @@ fun CreateFlashcardScreen(
             value = answer,
             onValueChange = { answer = it },
             label = { Text("Answer") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 160.dp),
+            minLines = 5
         )
 
         Spacer(Modifier.height(20.dp))
