@@ -14,6 +14,10 @@ class MemoryRepository(private val dao: MemoryDao) {
 
     fun getAll(): Flow<List<Memory>> = dao.getAll()
 
+    fun getCompleted(): Flow<List<Memory>> = dao.getCompleted()
+
+    fun getIncomplete(): Flow<List<Memory>> = dao.getIncomplete()
+
     fun getById(id: Long) = dao.getById(id)
 
     fun search(query: String): Flow<List<Memory>> = dao.search(query)

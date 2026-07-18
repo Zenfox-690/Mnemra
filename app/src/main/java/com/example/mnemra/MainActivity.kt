@@ -12,8 +12,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val initialCaptureMemoryId = if (intent.getBooleanExtra("open_capture_note", false)) {
+            intent.getLongExtra("memory_id", -1L).takeIf { it != -1L }
+        } else {
+            null
+        }
+
         setContent {
-            AppNavigation()
+            AppNavigation(initialCaptureMemoryId = initialCaptureMemoryId)
         }
     }
 }

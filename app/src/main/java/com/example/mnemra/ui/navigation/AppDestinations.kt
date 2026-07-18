@@ -28,4 +28,10 @@ sealed class AppDestinations(val route: String) {
 
     data object ReviewQueue :
         AppDestinations("review_queue")
+
+    data object CaptureNote : AppDestinations("capture_note/{memoryId}") {
+        fun createRoute(memoryId: Long) = "capture_note/$memoryId"
+    }
+
+    data object Settings : AppDestinations("settings")
 }

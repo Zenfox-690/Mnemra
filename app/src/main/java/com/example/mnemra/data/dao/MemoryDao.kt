@@ -54,4 +54,20 @@ interface MemoryDao {
     suspend fun getEmptyCaptureForSource(
         sourceId: Long
     ): Memory?
+
+    @Query("""
+        SELECT * FROM memories
+        WHERE (content IS NULL OR TRIM(content) = '')
+        AND archived = 0
+        ORDER BY updatedAt DESC
+    """)
+    fun getIncomplete(): Flow<List<Memory>>
+
+    @Query("""
+        SELECT * FROM memories
+        WHERE archived = 0
+        AND TRIM(content) != ''
+        ORDER BY favorite DESC, createdAt DESC
+    """)
+    fun getCompleted(): Flow<List<Memory>>
 }

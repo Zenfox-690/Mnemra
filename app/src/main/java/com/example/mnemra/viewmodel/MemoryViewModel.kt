@@ -34,8 +34,13 @@ constructor(
             searchQuery
                     .debounce(300)
                     .flatMapLatest { query ->
-                        if (query.isBlank()) repository.getAll() else repository.search(query)
+                        if (query.isBlank()) repository.getCompleted() else repository.search(query)
                     }
+                    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val incompleteMemories: StateFlow<List<Memory>> =
+            repository
+                    .getIncomplete()
                     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val archivedMemories: StateFlow<List<Memory>> =
@@ -108,6 +113,20 @@ constructor(
     fun archiveMemory(memory: Memory, onComplete: () -> Unit) {
         viewModelScope.launch {
             repository.update(memory.copy(archived = true, updatedAt = System.currentTimeMillis()))
+            onComplete()
+        }
+    }
+
+    fun completeCapture(memoryId: Long, title: String, note: String, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            val memory = repository.getById(memoryId).firstOrNull() ?: return@launch
+            repository.update(
+                    memory.copy(
+                            title = title,
+                            content = note,
+                            updatedAt = System.currentTimeMillis()
+                    )
+            )
             onComplete()
         }
     }
