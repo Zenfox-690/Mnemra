@@ -3,9 +3,12 @@ package com.example.mnemra.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mnemra.data.entity.Memory
+import com.example.mnemra.data.entity.MemoryWithTags
+import com.example.mnemra.data.entity.MemoryWithTagsUi
 import com.example.mnemra.data.entity.Source
 import com.example.mnemra.data.repository.MemoryRepository
 import com.example.mnemra.data.repository.SourceRepository
+import com.example.mnemra.data.repository.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,10 +22,18 @@ class MemoryViewModel
 @Inject
 constructor(
         private val repository: MemoryRepository,
-        private val sourceRepository: SourceRepository
+        private val sourceRepository: SourceRepository,
+        private val tagRepository: TagRepository
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow("")
+
+    private val _selectedTagId = MutableStateFlow<Long?>(null)
+    val selectedTagId: StateFlow<Long?> = _selectedTagId.asStateFlow()
+
+    fun selectTag(tagId: Long?) {
+        _selectedTagId.value = tagId
+    }
 
     private val _saving = MutableStateFlow(false)
     val saving: StateFlow<Boolean> = _saving
@@ -30,13 +41,49 @@ constructor(
     private val _savingDetail = MutableStateFlow(false)
     val savingDetail: StateFlow<Boolean> = _savingDetail
 
-    val memories: StateFlow<List<Memory>> =
-            searchQuery
-                    .debounce(300)
-                    .flatMapLatest { query ->
-                        if (query.isBlank()) repository.getCompleted() else repository.search(query)
+    val memories: StateFlow<List<MemoryWithTagsUi>> =
+            combine(
+                searchQuery.debounce(300),
+                _selectedTagId
+            ) { query, tagId ->
+                Pair(query, tagId)
+            }.flatMapLatest { (query, tagId) ->
+                if (tagId != null) {
+                    repository.getMemoriesForTagWithTags(tagId).map { list ->
+                        if (query.isBlank()) {
+                            list
+                        } else {
+                            list.filter { item ->
+                                item.memory.title.contains(query, ignoreCase = true) ||
+                                item.memory.content.contains(query, ignoreCase = true) ||
+                                item.tags.any { t -> t.name.contains(query, ignoreCase = true) }
+                            }
+                        }
                     }
-                    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+                } else {
+                    if (query.isBlank()) {
+                        repository.getCompletedWithTags()
+                    } else {
+                        combine(
+                            repository.searchWithTags(query),
+                            repository.searchByTagWithTags(query)
+                        ) { titleContentList, tagList ->
+                            val mergedMap = LinkedHashMap<Long, MemoryWithTags>()
+                            for (m in titleContentList) {
+                                mergedMap[m.memory.id] = m
+                            }
+                            for (m in tagList) {
+                                if (!mergedMap.containsKey(m.memory.id)) {
+                                    mergedMap[m.memory.id] = m
+                                }
+                            }
+                            mergedMap.values.toList()
+                        }
+                    }
+                }
+            }.map { list ->
+                list.map { MemoryWithTagsUi(it.memory, it.tags) }
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val incompleteMemories: StateFlow<List<Memory>> =
             repository

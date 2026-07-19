@@ -23,4 +23,8 @@ import androidx.room.Index
                         )],
         indices = [Index("memoryId"), Index("tagId")]
 )
-data class MemoryTag(val memoryId: Long, val tagId: Long)
+data class MemoryTag(
+    val memoryId: Long,
+    val tagId: Long,
+    val createdAt: Long = System.currentTimeMillis()
+)

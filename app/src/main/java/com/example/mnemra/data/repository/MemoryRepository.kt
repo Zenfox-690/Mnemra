@@ -2,6 +2,7 @@ package com.example.mnemra.data.repository
 
 import com.example.mnemra.data.dao.MemoryDao
 import com.example.mnemra.data.entity.Memory
+import com.example.mnemra.data.entity.MemoryWithTags
 import kotlinx.coroutines.flow.Flow
 
 class MemoryRepository(private val dao: MemoryDao) {
@@ -23,4 +24,12 @@ class MemoryRepository(private val dao: MemoryDao) {
     fun search(query: String): Flow<List<Memory>> = dao.search(query)
 
     fun getArchived(): Flow<List<Memory>> = dao.getArchived()
+
+    fun getCompletedWithTags(): Flow<List<MemoryWithTags>> = dao.getCompletedWithTags()
+
+    fun searchWithTags(query: String): Flow<List<MemoryWithTags>> = dao.searchWithTags(query)
+
+    fun searchByTagWithTags(query: String): Flow<List<MemoryWithTags>> = dao.searchByTagWithTags(query)
+
+    fun getMemoriesForTagWithTags(tagId: Long): Flow<List<MemoryWithTags>> = dao.getMemoriesForTagWithTags(tagId)
 }

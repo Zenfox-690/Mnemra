@@ -11,6 +11,7 @@ import com.example.mnemra.data.repository.FlashcardRepository
 import com.example.mnemra.data.repository.MemoryRepository
 import com.example.mnemra.data.repository.ReviewRepository
 import com.example.mnemra.data.repository.SourceRepository
+import com.example.mnemra.data.repository.TagRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,6 +47,11 @@ object AppModule {
     @Singleton
     fun provideSourceRepository(database: MnemraDatabase): SourceRepository =
             SourceRepository(database.sourceDao())
+
+    @Provides
+    @Singleton
+    fun provideTagRepository(database: MnemraDatabase): TagRepository =
+            TagRepository(database.tagDao(), database.memoryDao())
 
     @Provides
     @Singleton

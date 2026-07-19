@@ -16,6 +16,7 @@ object DatabaseProvider {
                 MnemraDatabase::class.java,
                 "mnemra.db"
             )
+                .addMigrations(MnemraDatabase.MIGRATION_1_2)
                 .build()
                 .also {
                     INSTANCE = it
